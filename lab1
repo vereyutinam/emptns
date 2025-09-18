@@ -1,0 +1,96 @@
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+double validate(double x) {
+    while (cin.peek() != '\n' || cin.fail() || x > pow(10, 6) || x < pow(10, -3) || x <= 0) {
+        cin.clear();
+        cin.ignore(1000000000, '\n');
+        cout << "error" << endl << "Введите подходящее значение: " << endl;
+        cin >> x;
+    }
+    return x;
+}   
+
+int validateZ(double x) {
+    while (cin.peek() != '\n' || cin.fail() || x > pow(10, 6) || (x - trunc(x)) != 0 || x <= 0) {
+        cin.clear();
+        cin.ignore(1000000000, '\n');
+        cout << "error" << endl << "Введите подходящее значение: " << endl;
+        cin >> x;
+    }
+    return x;
+}
+
+
+class hotel {
+private:
+    string name;
+    int paid;
+    int all;
+    double cost;
+
+public:
+    hotel() {
+        name = "noname";
+        paid = 0;
+        all = 0;
+        cost = 0;
+    }
+
+    hotel(string valueN, int valueP, int valueAll, double valueC) {
+        name = valueN;
+        paid = valueP;
+        all = valueAll;
+        cost = valueC;
+    }
+
+    void Print() {
+        cout << endl << endl << "Название гостиницы: " << name << endl << "Число заселенных мест: " << paid << endl;
+        cout << "Общее число мест: " << all << endl << "Cтоимость дня проживания: " << cost << endl << "Выручка: ";
+    }
+    
+    double Proceeds() {
+        return cost * paid;
+    }
+};
+
+
+
+int main()
+{
+    system("chcp 1251 > nul");
+    setlocale(LC_ALL, "ru");
+
+    cout << "Введите название гостиницы: ";
+    string n;
+    cin >> n;
+
+    cout << "Введите число заселенных мест: ";
+    double p;
+    cin >> p;
+    p = validateZ(p);
+
+    cout << "Введите общее число мест: ";
+    double al;
+    cin >> al;
+    al = validateZ(al);
+    while (al < p) {
+        cin.clear();
+        cin.ignore(1000000000, '\n');
+        cout << "error" << endl << "Введите подходящее значение: " << endl;
+        cin >> al;
+        al = validateZ(al);
+    }
+
+    cout << "Введите стоимость дня проживания: ";
+    double c;
+    cin >> c;
+    c = validate(c);
+
+    hotel a(n, p, al, c);
+    a.Print();
+    cout << a.Proceeds() << endl << endl;
+}
+
