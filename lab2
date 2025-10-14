@@ -186,9 +186,11 @@ public:
 		cout << "Имя: ";
 		cin >> valueName;
 		valueName = valStrName(valueName);
+		valueName = toLower(valueName);
 		cout << "Фамилия: ";
 		cin >> valueSurname;
 		valueSurname = valStrName(valueSurname);
+		valueSurname = toLower(valueSurname);
 
 
 		for (int i = 0; i < clients.size(); i++) {
@@ -233,6 +235,7 @@ public:
 		cout << "Введите фамилию клиента: ";
 		cin >> valueSurname;
 		valueSurname = valStrName(valueSurname);
+		valueSurname = toLower(valueSurname);
 
 		vector<int> roomNumber;
 		//int roomNumber = -1;
