@@ -1,0 +1,307 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm> 
+#include <cmath>
+
+
+using namespace std;
+
+
+string toLower(string str) {
+	transform(str.begin(), str.end(), str.begin(), ::tolower);
+	return str;
+}
+
+
+double valDouble(double x) {
+	while (cin.peek() != '\n' || cin.fail() || x > pow(10, 6) || x < pow(10, -3) || x <= 0) {
+		cin.clear();
+		cin.ignore(1000000000, '\n');
+		cout << "error" << endl << "Введите подходящее значение: " << endl;
+		cin >> x;
+	}
+	return x;
+}
+
+int valInt(double x) {
+	while (cin.peek() != '\n' || cin.fail() || x > pow(10, 6) || (x - trunc(x)) != 0 || x < 0) {
+		cin.clear();
+		cin.ignore(1000000000, '\n');
+		cout << "error" << endl << "Введите подходящее значение: " << endl;
+		cin >> x;
+	}
+	return x;
+}
+string valStr(string str) {
+	while (str.length() > 15) {
+		cout << "Введите подходящее значение: ";
+		cin.clear();
+		cin.ignore(1000000000, '\n');
+		getline(cin, str);
+	}
+	return str;
+}
+string valStrName(string str) {
+	while (str.length() > 15 || (str.find_first_of("0123456789") != string::npos)) {
+		cout << "Введите подходящее значение: ";
+		cin.clear();
+		cin.ignore(1000000000, '\n');
+		getline(cin, str);
+	}
+	return str;
+}
+
+
+
+
+enum RoomType { ECONOMY = 1200, STANDARD = 2400, PREMIUM = 8000 };
+
+class Room {
+
+public:
+	int number;
+	double price;
+	bool isFree;
+
+
+	Room() {
+		number = 0;
+		price = RoomType :: STANDARD;
+		isFree = true;
+	}
+
+	Room(int valueNumber, double valuePrice) {
+		number = valueNumber;
+		price = valuePrice;
+		isFree = true;
+
+	}
+
+	void showRoom(){
+		cout << "№ " << number << " - " << price;
+
+		if (isFree) {
+			cout << " свободен" << endl;
+		}
+		else {
+			cout << " занят" << endl;
+		}
+	}
+
+};
+
+
+class Client {
+
+public:
+	string name;
+	string surname;
+	int rnumber;
+
+	Client() {
+		name = "noname";
+		surname = "none";
+		rnumber = 0;
+	}
+
+	Client(string valueName, string valueSurname, int valuerRnumber) {
+		name = valueName;
+		surname = valueSurname;
+		rnumber = valuerRnumber;
+	}
+};
+
+
+
+class Hotel {
+private:
+	vector<Room> rooms;
+	vector<Client> clients;
+
+	// Приватный конструктор
+	Hotel() {}
+
+	// Запрет копирования и присваивания
+	Hotel(const Hotel&) = delete;
+	Hotel& operator=(const Hotel&) = delete;
+
+public:
+	
+	// Статический метод для получения единственного экземпляра
+	static Hotel& getInstance() {
+		static Hotel instance; // Создается при первом вызове
+		return instance;
+	}
+
+	void addRoom(){
+		int valueNumber; double valuePrice; string valueType;
+
+		cout << "Номер комнаты: ";
+		cin >> valueNumber;
+		valueNumber = valInt(valueNumber);
+		for (int i = 0; i < rooms.size(); i++) {
+			if (rooms[i].number == valueNumber) {
+				cout << endl << "Информация о номере уже добавлена" << endl;
+				return;
+			}
+
+		}
+
+		cout << "Тип комнаты (1 - Эконом, 2 - Стандарт, 3 - Премиум): ";
+		cin >> valueType;
+		valueType = valStr(valueType);
+		valueType = toLower(valueType);
+		if (valueType == "эконом" || valueType == "1" || valueType == "economy") {
+			valuePrice = RoomType::ECONOMY;
+		}
+		else if (valueType == "стандарт" || valueType == "2" || valueType == "standart") {
+			valuePrice = RoomType::STANDARD;
+		}
+		else if (valueType == "премиум" || valueType == "3" || valueType == "premium") {
+			valuePrice = RoomType::PREMIUM;
+		}
+		else {
+			cout << endl << "Неверный тип" << endl;
+			return;
+		}
+	
+		rooms.push_back(Room(valueNumber, valuePrice));
+		cout << endl << "Номер добавлен! Всего номеров: " << rooms.size() << endl;
+	}
+
+	void listFree() {
+		for (int i = 0; i < rooms.size(); i++) {
+			if (rooms[i].isFree) {
+				rooms[i].showRoom();
+			}
+		}
+	}
+
+	void addClient() {
+		string valueName;
+		string valueSurname;
+		int valueRnumber;
+
+		cout << "Имя: ";
+		cin >> valueName;
+		valueName = valStrName(valueName);
+		cout << "Фамилия: ";
+		cin >> valueSurname;
+		valueSurname = valStrName(valueSurname);
+
+
+		for (int i = 0; i < clients.size(); i++) {
+			if ((clients[i].name == valueName) && (clients[i].surname == valueSurname)) {
+				cout << endl << "Клиент уже заказал один номер" << endl;
+				return;
+			}
+
+		}
+
+		cout << "номер: ";
+		cin >> valueRnumber;
+		valueRnumber = valInt(valueRnumber);
+
+		int flag = -1;
+		for (int i = 0; i < rooms.size(); i++) {
+			if (valueRnumber == rooms[i].number) {
+				flag = i;
+				break;
+			}
+		}
+
+		if (flag == -1) {
+			cout << endl << "Такого номера нет" << endl;
+			return;
+		}
+
+		if (!rooms[flag].isFree) {
+			cout << endl << "Номер занят" << endl;
+			return;
+		}
+
+
+		rooms[flag].isFree = false;
+		clients.push_back(Client(valueName, valueSurname, valueRnumber));
+		cout << endl << "Клиент зарегистрирован! Всего клиентов: " << clients.size() << endl;
+	}
+
+	void showPrice() {
+
+		string valueSurname;
+		cout << "Введите фамилию клиента: ";
+		cin >> valueSurname;
+		valueSurname = valStrName(valueSurname);
+
+		vector<int> roomNumber;
+		//int roomNumber = -1;
+		for (int i = 0; i < clients.size(); i++) {
+			if (valueSurname == clients[i].surname) {
+				roomNumber.push_back(clients[i].rnumber);
+			}
+		}
+
+		if (roomNumber.size() == 0) {
+			cout << endl << "Такого клиента нет" << endl;
+			return;
+		}
+
+		for (int j = 0; j < roomNumber.size(); j++) {
+			for (int i = 0; i < rooms.size(); i++) {
+				if (roomNumber[j] == rooms[i].number) {
+					if (roomNumber.size() > 1) {
+						cout << clients[i].name << " ";
+					};
+					cout << rooms[i].price << endl;
+				}
+			}
+		}
+
+	}
+	~Hotel() {
+		cout << endl << "\n====== СТАТИСТИКА ЗАКРЫТИЯ ГОСТИНИЦЫ ======" << endl;
+		cout << "Всего номеров: " << rooms.size() << endl;
+		cout << "Всего клиентов: " << clients.size() << endl;
+
+		int freeRooms = 0;
+		for (const auto& room : rooms) {
+			if (room.isFree) freeRooms++;
+		}
+		cout << "Свободных номеров: " << freeRooms << endl;
+		cout << "Занятых номеров: " << rooms.size() - freeRooms << endl;
+	}
+};
+
+
+int main() {
+	setlocale(LC_ALL, "ru");
+	system("chcp 1251 > nul");
+	
+	// Получаем единственный экземпляр отеля
+	Hotel& hotel = Hotel::getInstance();
+
+	int choice;
+	do {
+		cout << "\n ====== ДОБРО ПОЖАЛОВАТЬ В ГОСТИНИЦУ ====== " << endl;
+		cout << "1. Добавить номер" << endl;
+		cout << "2. Зарегистрировать клиента и забронировать номер" << endl;
+		cout << "3. Показать свободные номера" << endl;
+		cout << "4. Узнать стоимость проживания" << endl;
+		cout << "0. Выход" << endl;
+		cout << "Выберите: ";
+		cin >> choice;
+		choice = valInt(choice);
+			
+		switch (choice) {
+		case 1: hotel.addRoom(); break;
+		case 2: hotel.addClient(); break;
+		case 3: hotel.listFree(); break;
+		case 4: hotel.showPrice(); break;
+		case 0: cout << "Выход из системы"; break;
+		default: cout << "Неверный выбор"; break;
+		}
+	} while (choice != 0);
+
+	return 0;
+}
