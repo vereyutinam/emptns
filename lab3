@@ -107,7 +107,12 @@ public:
             allCost = allCost + costs[i];
             n = i+1;
         }
-        averageCostValue = allCost / n;
+        if (n == 0) {
+            averageCostValue = 0;
+        }
+        else {
+            averageCostValue = allCost / n;
+        }
         cout << "Средняя стоимость: " << averageCostValue << endl;
     }
 
