@@ -1,0 +1,185 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+
+using namespace std;
+void valInt(double x) {
+
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(1000000000, '\n');
+        throw exception("Неверный формат ввода");
+    }
+
+    if (cin.peek() != '\n') {
+        cin.clear();
+        cin.ignore(1000000000, '\n');
+        throw exception("В строке есть лишние символы");
+    }
+
+    if (x < 0) {
+        throw exception("Значение не может быть отрицательным");
+    }
+
+    if (x > 100) {
+        throw exception("Значение не может быть больше 100");
+    }
+
+    if ((x - trunc(x)) != 0) {
+        throw exception("Требуется целое число");
+    }
+
+    return;
+}
+
+int valueForInt() {
+    double x;
+    while (true) {
+        cin >> x;
+        try {
+            valInt(x);
+            break;
+        }
+        catch (exception & ex) {
+            cout << ex.what() << endl << "Введите подходящее значение: ";
+        }
+    }
+    return x;
+}
+
+
+class ITypeRoom {
+public:
+    double virtual Price(int a) = 0;
+    string virtual Type() = 0;
+};
+
+class Economy : public ITypeRoom {
+public:
+
+    double Price(int a) override {
+        return 12*(100 - a);
+    }
+    string Type() override {
+        return "Economy";
+    }
+};
+
+class Standard : public ITypeRoom {
+public:
+
+    double Price(int a) override {
+        return 20 * (100 - a);
+    }
+    string Type() override {
+        return "Standard";
+    }
+};
+
+class Premium : public ITypeRoom {
+public:
+
+    double Price(int a) override {
+        return 80 * (100 - a);
+    }
+    string Type() override {
+        return "Premium";
+    }
+};
+
+
+class Hotel {
+private:
+    double averageCostValue = 0;
+    double allCost = 0;
+    int n = 0;
+    vector<double> costs;
+    vector<string> types;
+public:
+    void add(ITypeRoom & room, int a) {
+        costs.push_back(room.Price(a));
+        types.push_back(room.Type());
+    }
+    void averageCost() {
+        allCost = 0;
+        for (int i = 0; i < costs.size(); i++) {
+            allCost = allCost + costs[i];
+            n = i+1;
+        }
+        averageCostValue = allCost / n;
+        cout << "Средняя стоимость: " << averageCostValue << endl;
+    }
+
+    void ShowRooms() {
+        for (int i = 0; i < costs.size(); i++) {
+            cout << "№" << i + 1 << ": " << types[i] << " - " << costs[i] << endl;
+        }
+    }
+
+};
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    int a = 0;
+
+    Hotel myHotel;
+    
+    int choice;
+    do {
+        cout << "\n========= Гостиница =========" << endl;
+        cout << "1. Добавить номер Economy" << endl;
+        cout << "2. Добавить номер Standard" << endl;
+        cout << "3. Добавить номер Premium" << endl;
+        cout << "4. Показать все номера" << endl;
+        cout << "5. Показать среднюю стоимость" << endl;
+        cout << "0. Выход" << endl;
+        cout << "Выберите действие: ";
+   
+        choice = valueForInt();
+
+        switch (choice) {
+        case 1: {
+            int discount;
+            cout << "Введите скидку в %: ";
+            discount = valueForInt();
+            Economy ec;
+            myHotel.add(ec, discount);
+            cout << "Номер Economy добавлен!" << endl;
+            break;
+        }
+        case 2: {
+            int discount;
+            cout << "Введите скидку в %: ";
+            discount = valueForInt();
+            Standard st;
+            myHotel.add(st, discount);
+            cout << "Номер Standard добавлен!" << endl;
+            break;
+        }
+        case 3: {
+            int discount;
+            cout << "Введите скидку в %: ";
+            discount = valueForInt();
+            Premium pr;
+            myHotel.add(pr, discount);
+            cout << "Номер Premium добавлен!" << endl;
+            break;
+        }
+        case 4:
+            myHotel.ShowRooms();
+            break;
+        case 5:
+            myHotel.averageCost();
+            break;
+        case 0:
+            cout << "Выход из программы" << endl;
+            break;
+        default:
+            cout << "Неверный выбор" << endl;
+        }
+    } while (choice != 0);
+
+
+    return 0;
+}
